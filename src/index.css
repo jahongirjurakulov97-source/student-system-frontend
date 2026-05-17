@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Agar qo'shimcha yumshoq o'tish effektlari kerak bo'lsa, buni ham qo'shishingiz mumkin: */
+body {
+  @apply bg-slate-50 antialiased;
+}
