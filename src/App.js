@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useRef } from "react"; 
+const API = "https://dashboard.render.com";
+
+function App() {
+
+}
 import axios from "axios";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from "react-router-dom";
 import { 
@@ -19,7 +24,7 @@ const Lessons = () => {
   // Bazadagi ma'ruzalarni yuklab olish funksiyasi
   const fetchLessons = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/lessons");
+      const res = ;axios.get("https://YOUR-BACKEND.onrender.com/api/lessons")
       setExistingLessons(res.data.filter(l => l.type === "maruza"));
     } catch (err) {
       console.log("Ma'ruzalarni yuklashda xatolik:", err);
@@ -48,7 +53,7 @@ const Lessons = () => {
     formData.append("teacher", "Admin");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/lessons/upload", formData, {
+      const response = await axios.post("https://YOUR-BACKEND.onrender.com/api/lessons/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -68,7 +73,7 @@ const Lessons = () => {
   const handleDeleteLesson = async (id) => {
     if (window.confirm("Haqiqatan ham ushbu ma'ruzani o'chirmoqchimisiz? ⚠️")) {
       try {
-        await axios.delete(`http://localhost:5000/api/lessons/${id}`);
+        await axios.delete("https://YOUR-BACKEND.onrender.com/api/lessons/${id}`);
         alert("Ma'ruza muvaffaqiyatli o'chirildi! ✅");
         fetchLessons(); // Ro'yxatni yangilash
       } catch (err) {
@@ -157,7 +162,7 @@ const PracticeCreator = () => {
   // Bazadagi amaliyotlarni yuklab olish funksiyasi
   const fetchPractices = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/lessons");
+      const res = await axios.get("https://dashboard.render.com/api/lessons");
       setExistingPractices(res.data.filter(l => l.type === "amaliyot"));
     } catch (err) {
       console.log("Amaliyotlarni yuklashda xatolik:", err);
@@ -187,7 +192,7 @@ const PracticeCreator = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/lessons/upload", formData, {
+      await axios.post(/"https://dashboard.render.com/api/lessons/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       
@@ -208,7 +213,7 @@ const PracticeCreator = () => {
   const handleDeletePractice = async (id) => {
     if (window.confirm("Haqiqatan ham ushbu amaliy topshiriqni o'chirmoqchimisiz? ⚠️")) {
       try {
-        await axios.delete(`http://localhost:5000/api/lessons/${id}`);
+        await axios.delete(`/"https://dashboard.render.com/api/lessons/${id}`);
         alert("Amaliy topshiriq muvaffaqiyatli o'chirildi! ✅");
         fetchPractices(); // Ro'yxatni yangilash
       } catch (err) {
@@ -316,7 +321,7 @@ const TestCreator = () => {
 
   const fetchTests = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/tests");
+      const res = await axios.get("https://dashboard.render.com/api/tests");
       setExistingTests(res.data);
     } catch (err) {
       console.log("Testlarni yuklashda xatolik:", err);
@@ -359,7 +364,7 @@ const TestCreator = () => {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/tests/create", testData);
+      await axios.post(/"https://dashboard.render.com/api/tests/create", testData);
       alert(`"${testTitle}" testi jami ${questionsList.length}ta savol bilan muvaffaqiyatli bazaga saqlandi! 🚀✅`);
       
       setTestTitle("");
@@ -373,7 +378,7 @@ const TestCreator = () => {
   const handleDeleteTest = async (id) => {
     if (window.confirm("Haqiqatan ham ushbu testni o'chirmoqchimisiz? ⚠️")) {
       try {
-        await axios.delete(`http://localhost:5000/api/tests/${id}`);
+        await axios.delete(`https://dashboard.render.com/api/tests/${id}`);
         alert("Test muvaffaqiyatli o'chirildi! ✅");
         fetchTests(); 
       } catch (err) {
@@ -474,7 +479,7 @@ const StudentMonitoring = () => {
     const [students, setStudents] = useState([]);
     
     const fetchResults = () => {
-      axios.get("http://localhost:5000/api/tests/all-results")
+      axios.get("https://dashboard.render.com/api/tests/all-results")
         .then(res => setStudents(res.data.results || res.data))
         .catch(err => console.log(err));
     };
@@ -492,7 +497,7 @@ const StudentMonitoring = () => {
 
       if (window.confirm("Haqiqatan ham ushbu talaba natijasini ro'yxatdan o'chirmoqchimisiz? ⚠️")) {
         try {
-          await axios.delete(`http://localhost:5000/api/tests/result/${id}`);
+          await axios.delete(`https://dashboard.render.com/api/tests/result/${id}`);
           alert("Talaba natijasi muvaffaqiyatli o'chirildi! ✅");
           fetchResults(); 
         } catch (err) {
@@ -546,7 +551,7 @@ const StudentMonitoring = () => {
 const StudentLessons = () => {
     const [lessons, setLessons] = useState([]);
     useEffect(() => {
-        axios.get("http://localhost:5000/api/lessons")
+        axios.get"https://dashboard.render.com/api/lessons")
           .then(res => setLessons(res.data))
           .catch(err => console.log(err));
     }, []);
@@ -564,7 +569,7 @@ const StudentLessons = () => {
                   <div key={idx} className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex justify-between items-center hover:shadow-md transition">
                       <span className="font-black text-slate-700 italic text-lg tracking-tight">{idx+1}. {lesson.title}</span>
                       {lesson.fileUrl && (
-                        <a href={`http://localhost:5000/uploads/${lesson.fileUrl}`} target="_blank" rel="noreferrer" className="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">O'QISH (PDF)</a>
+                        <a href={`https://dashboard.render.com/uploads/${lesson.fileUrl}`} target="_blank" rel="noreferrer" className="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">O'QISH (PDF)</a>
                       )}
                   </div>
                 ))
@@ -594,7 +599,7 @@ const StudentPracticals = ({ score, timeSpent }) => {
     const studentName = savedUser.name || savedUser.username || "Talaba";
 
     useEffect(() => {
-        axios.get("http://localhost:5000/api/lessons")
+        axios.get("https://dashboard.render.com/api/lessons")
           .then(res => setLessons(res.data))
           .catch(err => console.log("Darslarni yuklashda xato:", err));
     }, []);
@@ -637,7 +642,7 @@ const StudentPracticals = ({ score, timeSpent }) => {
         try {
             setUploadingStatus(prev => ({ ...prev, [lessonId]: "Yuborilmoqda..." }));
             
-            const response = await axios.post("http://localhost:5000/api/tests/submit", formData, {
+            const response = await axios.post("https://dashboard.render.com/api/tests/submit", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
             
@@ -688,7 +693,7 @@ const StudentPracticals = ({ score, timeSpent }) => {
 
                         <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-dashed border-orange-100">
                           {practice.fileUrl && (
-                            <a href={`http://localhost:5000/uploads/${practice.fileUrl}`} target="_blank" rel="noreferrer" className="inline-block px-5 py-2 bg-orange-600 text-white rounded-xl text-sm font-bold hover:bg-orange-700 transition">
+                            <a href={`https://dashboard.render.com/uploads/${practice.fileUrl}`} target="_blank" rel="noreferrer" className="inline-block px-5 py-2 bg-orange-600 text-white rounded-xl text-sm font-bold hover:bg-orange-700 transition">
                               Biriktirilgan fayl
                             </a>
                           )}
@@ -744,12 +749,12 @@ const StudentTests = ({ user }) => {
   const timerRef = useRef(null);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/tests") 
+    axios.get("/https://dashboard.render.comapi/tests") 
       .then(res => {
         if(res.data && res.data.length > 0) {
           setTests(res.data);
         } else {
-          axios.get("http://localhost:5000/api/lessons").then(lessonRes => {
+          axios.get("https://dashboard.render.com/api/lessons").then(lessonRes => {
             if(lessonRes.data.length > 0) {
               const structureTests = lessonRes.data.map((l, i) => ({
                  _id: l._id,
@@ -811,7 +816,7 @@ const StudentTests = ({ user }) => {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/tests/submit", payload);
+      await axios.post("/https://dashboard.render.comapi/tests/submit", payload);
       alert(`Test yakunlandi! Natijangiz: ${scorePercentage}%. Tahlil muvaffaqiyatli saqlandi! ✅`);
       setActiveTest(null);
       setSelectedAnswers({});
@@ -921,7 +926,7 @@ export default function App() {
     }
 
     try {
-      const res = await axios.post(`http://localhost:5000/api/auth/${type}`, {
+      const res = await axios.post(`https://dashboard.render.com/api/auth/${type}`, {
         username: formData.username.trim(),
         password: formData.password,
         role: formData.role
