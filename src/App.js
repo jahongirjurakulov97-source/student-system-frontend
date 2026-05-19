@@ -10,10 +10,8 @@ import AdminPanel from "./components/AdminPanel";
 
 // --- GLOBAL BACKEND URL ---
 const API = "https://student-system-backend-3.onrender.com";
-
-function App() {
+ 
   // App komponentining asosiy qismi (agar pastrog'ida bo'lsa, o'shayerda turaveradi)
-}
 
 // --- 1. ADMIN UCHUN KOMPONENTLAR ---
 
