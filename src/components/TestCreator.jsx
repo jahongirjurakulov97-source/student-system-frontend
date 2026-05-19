@@ -2,6 +2,9 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import { Upload, FileText, CheckCircle } from "lucide-react";
 
+// Backend API jonli havolasi
+const API_URL = "https://student-system-backend-3.onrender.com";
+
 export default function Lessons() {
   const [topic, setTopic] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -29,8 +32,8 @@ export default function Lessons() {
     formData.append("teacher", "Admin"); // Standart qiymat
 
     try {
-      // 3. Backendga yuborish
-      const response = await axios.post("http://localhost:5000/api/lessons/upload", formData, {
+      // 3. Backendga yuborish (Yangi jonli URL bilan)
+      const response = await axios.post(`${API_URL}/api/lessons/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
