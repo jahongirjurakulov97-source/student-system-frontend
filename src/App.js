@@ -666,6 +666,88 @@ const StudentPracticals = ({ score, timeSpent }) => {
           <div>
             <label className="text-slate-400 font-bold ml-2 mb-2 block text-sm uppercase">Mavzu / Test Sarlavhasi</label>
             <input 
+              const TestCreator = () => {
+  // 1. Render qidirayotgan barcha statelar shu yerda yaratildi
+  const [testTitle, setTestTitle] = useState("");
+  const [question, setQuestion] = useState("");
+  const [options, setOptions] = useState({ a: "", b: "", c: "", d: "" });
+  const [correct, setCorrect] = useState("a");
+  const [questionsList, setQuestionsList] = useState([]);
+  const [existingTests, setExistingTests] = useState([]);
+
+  // 2. Mavjud testlarni bazadan yuklash funksiyasi
+  const fetchTests = () => {
+    axios.get("https://dashboard.render.com/api/tests")
+      .then(res => setExistingTests(res.data))
+      .catch(err => console.log(err));
+  };
+
+  useEffect(() => {
+    fetchTests();
+  }, []);
+
+  // 3. Savolni vaqtincha xotiraga (ro'yxatga) qo'shish
+  const addQuestionToMemory = () => {
+    if (!question.trim() || !options.a || !options.b || !options.c || !options.d) {
+      return alert("Iltimos, savol matni va barcha javoblarni to'ldiring! ⚠️");
+    }
+    const newQ = {
+      questionText: question,
+      options: [options.a, options.b, options.c, options.d],
+      correctAnswer: options[correct]
+    };
+    setQuestionsList([...questionsList, newQ]);
+    setQuestion("");
+    setOptions({ a: "", b: "", c: "", d: "" });
+    setCorrect("a");
+  };
+
+  // 4. Umumiylashtirilgan testni backend bazasiga saqlash
+  const saveEntireTestToDB = async () => {
+    if (!testTitle.trim()) return alert("Test sarlavhasini kiriting! ⚠️");
+    if (questionsList.length === 0) return alert("Kamida bitta savol qo'shing! ⚠️");
+
+    try {
+      await axios.post("https://dashboard.render.com/api/tests", {
+        title: testTitle,
+        questions: questionsList
+      });
+      alert("Butun test muvaffaqiyatli bazaga saqlandi! 🎉");
+      setTestTitle("");
+      setQuestionsList([]);
+      fetchTests();
+    } catch (err) {
+      console.error(err);
+      alert("Testni saqlashda xatolik yuz berdi.");
+    }
+  };
+
+  // 5. Eskirgan testni bazadan o'chirish
+  const handleDeleteTest = async (id) => {
+    if (!id) return;
+    if (window.confirm("Haqiqatan ham ushbu testni o'chirmoqchimisiz? ⚠️")) {
+      try {
+        await axios.delete(`https://dashboard.render.com/api/tests/${id}`);
+        alert("Test o'chirildi! ✅");
+        fetchTests();
+      } catch (err) {
+        console.error(err);
+        alert("O'chirishda xatolik yuz berdi.");
+      }
+    }
+  };
+
+  // 6. Siz yuborgan vizual interfeys (HTML qismi) endi barcha o'zgaruvchilarni taniydi
+  return (
+    <div className="space-y-8">
+      <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
+        <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3">
+          <ClipboardCheck className="text-emerald-600" /> Test Yaratish
+        </h2>
+        <div className="space-y-4 max-w-2xl">
+          <div>
+            <label className="text-slate-400 font-bold ml-2 mb-2 block text-sm uppercase">Mavzu / Test Sarlavhasi</label>
+            <input 
               disabled={questionsList.length > 0} 
               value={testTitle} 
               onChange={(e) => setTestTitle(e.target.value)} 
@@ -733,6 +815,18 @@ const StudentPracticals = ({ score, timeSpent }) => {
                 <button
                   type="button"
                   onClick={() => handleDeleteTest(t._id)}
+                  className="px-5 py-3 bg-rose-100 text-rose-600 rounded-2xl font-bold hover:bg-rose-600 hover:text-white transition flex items-center gap-2 uppercase text-sm"
+                >
+                  <Trash2 size={16} /> O'chirish
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
                   className="px-5 py-3 bg-rose-100 text-rose-600 rounded-2xl font-bold hover:bg-rose-600 hover:text-white transition flex items-center gap-2 uppercase text-sm"
                 >
                   <Trash2 size={16} /> O'chirish
