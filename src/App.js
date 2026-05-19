@@ -902,9 +902,6 @@ const StudentTests = ({ user }) => {
   );
 };
 
-// ==========================================
-// --- 5. NAVIGATSIYA ELEMENTI KOMPONENTI ---
-// ==========================================
 const NavItem = ({ to, icon: Icon, label }) => {
   const location = useLocation();
   const active = location.pathname === to;
