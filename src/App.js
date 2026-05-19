@@ -926,3 +926,489 @@ StudentPracticals = ({ score, timeSpent }) => {
             setUploadingStatus(prev => ({ ...prev, [lessonId]: "Xatolik yuz berdi. Qayta urining." }));
         }
     };
+
+return (
+        <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
+          <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3"> Amaliy Mashg'ulotlar</h2>
+          <div className="space-y-6">
+              {amaliyotlar.length === 0 ? (
+                <p className="text-slate-400 italic p-4">Hozircha amaliy topshiriqlar yuborilmagan.</p>
+              ) : (
+                amaliyotlar.map((practice, idx) => {
+                  const lessonId = practice._id || idx;
+                  return (
+                    <div key={lessonId} className="p-6 bg-orange-50/30 rounded-3xl border border-orange-100 space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="font-black text-slate-800 text-xl">{idx+1}. {practice.title}</span>
+                          <span className="text-xs bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-bold uppercase">Amaliyot</span>
+                        </div>
+                        
+                        {practice.content && (
+                          <p className="bg-white p-4 rounded-2xl text-slate-600 text-sm border border-slate-100 whitespace-pre-line">{practice.content}</p>
+                        )}
+
+                        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-dashed border-orange-100">
+                          {practice.fileUrl && (
+                            <a href={`https://dashboard.render.com/uploads/${practice.fileUrl}`} target="_blank" rel="noreferrer" className="inline-block px-5 py-2 bg-orange-600 text-white rounded-xl text-sm font-bold hover:bg-orange-700 transition">
+                              Biriktirilgan fayl
+                            </a>
+                          )}
+
+                          <div className="flex items-center gap-2 bg-white p-1.5 pl-4 border border-slate-200 rounded-xl max-w-md w-full sm:w-auto">
+                            <span className="text-xs text-slate-500 truncate max-w-[150px]">
+                              {selectedFiles[lessonId] ? selectedFiles[lessonId].name : "Fayl tanlanmagan"}
+                            </span>
+                            <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition ml-auto">
+                              Explorer
+                              <input 
+                                type="file" 
+                                className="hidden" 
+                                onChange={(e) => handleFileChange(lessonId, e.target.files[0])}
+                              />
+                            </label>
+                          </div>
+
+                          <button 
+                            onClick={() => handleUploadHomework(practice)} 
+                            disabled={!selectedFiles[lessonId]}
+                            className={`px-5 py-2 rounded-xl text-sm font-bold transition ${                              
+                              selectedFiles[lessonId] 
+                                ? "bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer" 
+                                : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                            }`}                          
+                          >
+                            Vazifani topshirish
+                          </button>
+                        </div>
+
+                        {uploadingStatus[lessonId] && (
+                          <p className="text-xs font-semibold text-slate-500 animate-pulse pl-2">
+                            {uploadingStatus[lessonId]}
+                          </p>
+                        )}
+                    </div>
+                  );
+                })
+              )}
+          </div>
+        </div>
+    );
+};
+
+
+// --- 4. TALABA OYNASI: TEST TOPSHIRISH BO'LIMI ---
+const StudentTests = ({ user }) => {
+  const [tests, setTests] = useState([]);
+  const [activeTest, setActiveTest] = useState(null);
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [testTimeSpent, setTestTimeSpent] = useState(0);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    axios.get("https://dashboard.render.com/api/tests") 
+      .then(res => {
+        if(res.data && res.data.length > 0) {
+          setTests(res.data);
+        } else {
+          axios.get("https://dashboard.render.com/api/lessons").then(lessonRes => {
+            if(lessonRes.data.length > 0) {
+              const structureTests = lessonRes.data.map((l, i) => ({
+                 _id: l._id,
+                 title: l.title,
+                 questions: [
+                   { questionText: `${l.title} mavzusining asosiy maqsadi nima?`, options: ["Bilim olish", "Amaliyot qilish", "Tizimni o'rganish", "Hammasi to'g'ri"], correctAnswer: "Hammasi to'g'ri" }
+                 ]
+              }));
+              setTests(structureTests);
+            }
+          });
+        }
+      })
+      .catch(err => {
+         console.log("Test yuklashda xato, muqobil yuklanmoqda...", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (activeTest) {
+      timerRef.current = setInterval(() => {
+        setTestTimeSpent(prev => prev + 1);
+      }, 1000);
+    } else {
+      clearInterval(timerRef.current);
+      setTestTimeSpent(0);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [activeTest]);
+
+  const handleSelectAnswer = (qIdx, option) => {
+    setSelectedAnswers({ ...selectedAnswers, [qIdx]: option });
+  };
+
+  const handleSubmitTest = async () => {
+    if (!activeTest || !activeTest.questions || activeTest.questions.length === 0) {
+      alert("Bu testda savollar mavjud emas!");
+      setActiveTest(null);
+      return;
+    }
+    
+    let correctCount = 0;
+    const totalQuestions = activeTest.questions.length;
+
+    activeTest.questions.forEach((q, idx) => {
+      if (selectedAnswers[idx] === q.correctAnswer) {
+        correctCount++;
+      }
+    });
+
+    const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
+
+    const payload = {
+      studentId: user._id || user.id,
+      studentName: user.username,
+      lessonTitle: activeTest.title || activeTest.lessonTitle,
+      timeSpent: testTimeSpent,
+      testScore: scorePercentage
+    };
+
+    try {
+      await axios.post("https://dashboard.render.com/api/tests/submit", payload);
+      alert(`Test yakunlandi! Natijangiz: ${scorePercentage}%. Tahlil muvaffaqiyatli saqlandi! ✅`);
+      setActiveTest(null);
+      setSelectedAnswers({});
+    } catch (err) {
+      console.error(err);
+      alert("Natijani saqlashda xatolik yuz berdi.");
+    }
+  };
+
+  if (activeTest) {
+    return (
+      <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
+        <div className="flex justify-between items-center mb-8 border-b pb-4">
+          <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2">
+            <ClipboardCheck className="text-emerald-600" /> {activeTest.title || activeTest.lessonTitle}
+          </h2>
+          <div className="bg-slate-900 text-white px-6 py-2 rounded-2xl font-mono font-bold flex items-center gap-2">
+            <Timer size={18} className="text-emerald-400 animate-pulse" />
+            {Math.floor(testTimeSpent / 60)}:{(testTimeSpent % 60).toString().padStart(2, '0')}
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          {activeTest.questions.map((q, qIdx) => (
+            <div key={qIdx} className="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-4">
+              <h3 className="text-lg font-bold text-slate-800">{qIdx + 1}. {q.questionText}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {q.options.map((opt, oIdx) => (
+                  <button
+                    key={oIdx}
+                    type="button"
+                    onClick={() => handleSelectAnswer(qIdx, opt)}
+                    className={`p-4 rounded-2xl font-medium text-left border-2 transition-all ${                      
+                      selectedAnswers[qIdx] === opt
+                        ? "bg-emerald-50 border-emerald-500 text-emerald-900 font-bold"
+                        : "bg-white border-transparent hover:border-slate-200 text-slate-700"
+                    }`}                  
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={handleSubmitTest}
+          className="w-full mt-8 py-5 bg-emerald-600 text-white rounded-2xl font-black text-lg uppercase shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition"
+        >
+          Testni Yakunlash va Yuborish
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
+      <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3">
+        <ClipboardCheck className="text-emerald-600" /> Bilimni Sinash (Testlar)
+      </h2>
+      <div className="space-y-4">
+        {tests.length === 0 ? (
+          <p className="text-slate-400 italic p-4">Hozircha testlar mavjud emas.</p>
+        ) : (
+          tests.map((test, idx) => (
+            <div key={idx} className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex justify-between items-center hover:shadow-md transition">
+              <span className="font-black text-slate-700 text-lg">{test.title || test.lessonTitle}</span>
+              <button
+                type="button"
+                onClick={() => setActiveTest(test)}
+                className="px-6 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition"
+              >
+                TESTNI BOSHLASH
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
+const NavItem = ({ to, icon: Icon, label }) => {
+  const location = useLocation();
+  const active = location.pathname === to;
+  return (
+    <Link to={to} className={`w-full flex items-center gap-3 p-4 rounded-2xl transition-all duration-300 ${active ? 'bg-blue-600 text-white shadow-lg translate-x-2' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+      <Icon size={20}/> <span className="font-bold">{label}</span>
+    </Link>
+  );
+};
+
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({ username: '', password: '', role: 'student' });
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) setUser(JSON.parse(savedUser));
+  }, []);
+
+  const handleAuth = async (type) => {
+    if (!formData.username.trim() || !formData.password) {
+      return alert("Iltimos, barcha maydonlarni to'ldiring! ⚠️");
+    }
+
+    try {
+      const res = await axios.post(`https://dashboard.render.com/api/auth/${type}`, {
+        username: formData.username.trim(),
+        password: formData.password,
+        role: formData.role
+      });
+
+      const data = res.data.user || res.data;
+      localStorage.setItem("user", JSON.stringify(data));
+      setUser(data);
+      
+      alert(`${type === 'login' ? 'Tizimga muvaffaqiyatli kirildi' : "Ro'yxatdan muvaffaqiyatli o'tildi"}! ✅`);
+    } catch (err) { 
+      const serverError = err.response?.data?.error || err.response?.data?.message || "Xatolik yuz berdi!";
+      alert(`Xatolik: ${serverError} ❌`); 
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 font-sans">
+        <div className="bg-slate-800 p-10 rounded-[3rem] w-full max-w-md border border-slate-700 shadow-2xl">
+          <div className="flex bg-slate-900 p-1.5 rounded-2xl mb-8 border border-slate-700">
+            <button type="button" onClick={() => setFormData({...formData, role: 'student'})} className={`flex-1 py-3 rounded-xl font-bold transition ${formData.role === 'student' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500'}`}>Talaba</button>
+            <button type="button" onClick={() => setFormData({...formData, role: 'teacher'})} className={`flex-1 py-3 rounded-xl font-bold transition ${formData.role === 'teacher' ? 'bg-rose-600 text-white shadow-lg' : 'text-slate-500'}`}>Admin</button>
+          </div>
+          
+          <h1 className="text-2xl font-black text-white text-center mb-8 tracking-widest italic uppercase">
+            {isRegisterMode ? "RO'YXATDAN O'TISH" : "SMART AI LMS"}
+          </h1>
+
+          <div className="space-y-4">
+            <input type="text" value={formData.username} placeholder="Username" className="w-full p-4 bg-slate-700 rounded-2xl text-white outline-none border border-transparent focus:border-blue-500 font-bold" onChange={(e) => setFormData({...formData, username: e.target.value})}/>
+            <input type="password" value={formData.password} placeholder="Parol" className="w-full p-4 bg-slate-700 rounded-2xl text-white outline-none border border-transparent focus:border-blue-500 font-bold" onChange={(e) => setFormData({...formData, password: e.target.value})}/>
+            
+            <div className="pt-4 space-y-3">
+              <button 
+                type="button"
+                onClick={() => handleAuth(isRegisterMode ? 'register' : 'login')}
+                className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-lg uppercase shadow-xl hover:bg-blue-700 transition"
+              >
+                {isRegisterMode ? "Ro'yxatdan o'tish" : "Tizimga Kirish"}
+              </button>
+              
+              <button 
+                type="button"
+                onClick={() => setIsRegisterMode(!isRegisterMode)}
+                className="w-full text-center text-sm font-bold text-slate-400 hover:text-white transition pt-2"
+              >
+                {isRegisterMode ? "Sizda akkaunt bormi? Kirish" : "Yangi akkaunt yaratish (Ro'yxatdan o'tish)"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <div className="flex min-h-screen bg-slate-100 font-sans">
+        {/* Yon menyu / Sidebar */}
+        <aside className="w-80 bg-slate-900 p-6 flex flex-col justify-between text-white border-r border-slate-800 shrink-0">
+          <div className="space-y-8">
+            <div className="flex items-center gap-3 px-4 py-2 border-b border-slate-800 pb-6">
+              <div className="bg-blue-600 p-3 rounded-2xl shadow-lg shadow-blue-500/30">
+                <BrainCircuit size={24} className="text-white animate-pulse" />
+              </div>
+              <div>
+                <h1 className="font-black text-lg leading-tight uppercase tracking-wider">AI LMS</h1>
+                <span className="text-xs font-bold text-slate-500 uppercase">{user.role === 'teacher' ? 'O\'qituvchi (Admin)' : 'Talaba'}</span>
+              </div>
+            </div>
+
+            <nav className="space-y-2">
+              {user.role === 'teacher' ? (
+                <>
+                  <NavItem to="/admin" icon={LayoutDashboard} label="Asosiy Panel" />
+                  <NavItem to="/admin/lessons" icon={Upload} label="Ma'ruza Yuklash" />
+                  <NavItem to="/admin/practicals" icon={FolderPlus} label="Amaliyot Yaratish" />
+                  <NavItem to="/admin/tests" icon={ClipboardCheck} label="Test Tuzuvchi" />
+                  <NavItem to="/admin/monitoring" icon={Users} label="Talabalar Bahosi" />
+                </>
+              ) : (
+                <>
+                  <NavItem to="/student/lessons" icon={BookOpen} label="Ma'ruzalarim" />
+                  <NavItem to="/student/practicals" icon={BrainCircuit} label="Amaliy Topshiriqlar" />
+                  <NavItem to="/student/tests" icon={ClipboardCheck} label="Test Topshirish" />
+                </>
+              )}
+            </nav>
+          </div>
+
+          <div className="pt-6 border-t border-slate-800">
+            <div className="bg-slate-800/50 p-4 rounded-2xl mb-4 flex items-center gap-3">
+              <div className="w-10 h-10 bg-slate-700 rounded-xl flex items-center justify-center font-black uppercase text-blue-400">
+                {user.username?.charAt(0)}
+              </div>
+              <div className="overflow-hidden">
+                <p className="font-bold text-sm truncate">{user.username}</p>
+                <p className="text-xs text-slate-500 font-medium truncate">Online</p>
+              </div>
+            </div>
+            <button 
+              onClick={handleLogout} 
+              className="w-full flex items-center gap-3 p-4 text-rose-400 hover:bg-rose-950/30 hover:text-rose-300 rounded-2xl transition-all font-bold uppercase text-sm tracking-wider"
+            >
+              <LogOut size={18}/> Chiqish
+            </button>
+          </div>
+        </aside>
+
+        {/* Asosiy kontent oynasi */}
+        <main className="flex-1 p-10 overflow-y-auto max-h-screen">
+          <Routes>
+            {user.role === 'teacher' ? (
+              <>
+                <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/admin/lessons" element={<Lessons />} />
+                <Route path="/admin/practicals" element={<PracticeCreator />} />
+                <Route path="/admin/tests" element={<TestCreator />} />
+                <Route path="/admin/monitoring" element={<StudentMonitoring />} />
+                <Route path="*" element={<Navigate to="/admin" replace />} />
+              </>
+            ) : (
+              <>
+                <Route path="/student/lessons" element={<StudentLessons />} />
+                <Route path="/student/practicals" element={<StudentPracticals />} />
+                <Route path="/student/tests" element={<StudentTests user={user} />} />
+                <Route path="*" element={<Navigate to="/student/lessons" replace />} />
+              </>
+            )}
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
