@@ -994,6 +994,51 @@ export default function App() {
     );
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 font-sans">
+        <div className="bg-slate-800 p-10 rounded-[3rem] w-full max-w-md border border-slate-700 shadow-2xl">
+          <div className="flex bg-slate-900 p-1.5 rounded-2xl mb-8 border border-slate-700">
+            <button type="button" onClick={() => setFormData({...formData, role: 'student'})} className={`flex-1 py-3 rounded-xl font-bold transition ${formData.role === 'student' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500'}`}>Talaba</button>
+            <button type="button" onClick={() => setFormData({...formData, role: 'teacher'})} className={`flex-1 py-3 rounded-xl font-bold transition ${formData.role === 'teacher' ? 'bg-rose-600 text-white shadow-lg' : 'text-slate-500'}`}>Admin</button>
+          </div>
+          
+          <h1 className="text-2xl font-black text-white text-center mb-8 tracking-widest italic uppercase">
+            {isRegisterMode ? "RO'YXATDAN O'TISH" : "SMART AI LMS"}
+          </h1>
+
+          <div className="space-y-4">
+            <input type="text" value={formData.username} placeholder="Username" className="w-full p-4 bg-slate-700 rounded-2xl text-white outline-none border border-transparent focus:border-blue-500 font-bold" onChange={(e) => setFormData({...formData, username: e.target.value})}/>
+            <input type="password" value={formData.password} placeholder="Parol" className="w-full p-4 bg-slate-700 rounded-2xl text-white outline-none border border-transparent focus:border-blue-500 font-bold" onChange={(e) => setFormData({...formData, password: e.target.value})}/>
+            
+            <div className="pt-4 space-y-3">
+              <button 
+                type="button"
+                onClick={() => handleAuth(isRegisterMode ? 'register' : 'login')}
+                className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-lg uppercase shadow-xl hover:bg-blue-700 transition"
+              >
+                {isRegisterMode ? "Ro'yxatdan o'tish" : "Tizimga Kirish"}
+              </button>
+              
+              <button 
+                type="button"
+                onClick={() => setIsRegisterMode(!isRegisterMode)}
+                className="w-full text-center text-sm font-bold text-slate-400 hover:text-white transition pt-2"
+              >
+                {isRegisterMode ? "Sizda akkaunt bormi? Kirish" : "Yangi akkaunt yaratish (Ro'yxatdan o'tish)"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="flex min-h-screen bg-slate-100 font-sans">
