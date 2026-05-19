@@ -818,7 +818,7 @@ StudentMonitoring = () => {
 };
 
 // --- 2. TALABA OYNASI: MA'RUZALARIM BO'LIMI ---
-const StudentLessons = () => {
+ StudentLessons = () => {
     const [lessons, setLessons] = useState([]);
     useEffect(() => {
         axios.get(`${API_URL}/api/lessons`)
