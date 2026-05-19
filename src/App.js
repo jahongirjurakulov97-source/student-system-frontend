@@ -746,7 +746,7 @@ const StudentPracticals = ({ score, timeSpent }) => {
   );
 };
 
-const StudentMonitoring = () => {
+StudentMonitoring = () => {
     const [students, setStudents] = useState([]);
     
     const fetchResults = () => {
@@ -758,7 +758,6 @@ const StudentMonitoring = () => {
     useEffect(() => {
         fetchResults();
     }, []);
-
     const handleDeleteResult = async (e, id) => {
       if (e) e.stopPropagation(); 
       
