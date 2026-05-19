@@ -8,21 +8,25 @@ import {
 
 import AdminPanel from "./components/AdminPanel";
 
-// Renderdagi Backend API manzili
-const API_URL = "https://student-system-backend-3.onrender.com";
+// --- GLOBAL BACKEND URL ---
+const API = "https://student-system-backend-3.onrender.com";
+
+function App() {
+  // App komponentining asosiy qismi (agar pastrog'ida bo'lsa, o'shayerda turaveradi)
+}
 
 // --- 1. ADMIN UCHUN KOMPONENTLAR ---
 
 const Lessons = () => {
   const [topic, setTopic] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [existingLessons, setExistingLessons] = useState([]); // Eski ma'ruzalarni saqlash uchun
+  const [existingLessons, setExistingLessons] = useState([]); 
   const fileInputRef = useRef(null);
 
-  // Bazadagi ma'ruzalarni yuklab olish funksiyasi
+  // Bazadagi ma'ruzalarni yuklab olish
   const fetchLessons = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/lessons`);
+      const res = await axios.get(`${API}/api/lessons`);
       setExistingLessons(res.data.filter(l => l.type === "maruza"));
     } catch (err) {
       console.log("Ma'ruzalarni yuklashda xatolik:", err);
@@ -51,7 +55,7 @@ const Lessons = () => {
     formData.append("teacher", "Admin");
 
     try {
-      const response = await axios.post(`${API_URL}/api/lessons/upload`, formData, {
+      const response = await axios.post(`${API}/api/lessons/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -60,20 +64,20 @@ const Lessons = () => {
         setTopic("");
         setSelectedFile(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
-        fetchLessons(); // Ro'yxatni yangilash
+        fetchLessons(); 
       }
     } catch (err) {
       alert("Xatolik: Faylni yuklab bo'lmadi.");
     }
   };
 
-  // Eski ma'ruzani o'chirish funksiyasi
+  // Ma'ruzani o'chirish
   const handleDeleteLesson = async (id) => {
     if (window.confirm("Haqiqatan ham ushbu ma'ruzani o'chirmoqchimisiz? ⚠️")) {
       try {
-        await axios.delete(`${API_URL}/api/lessons/${id}`);
+        await axios.delete(`${API}/api/lessons/${id}`);
         alert("Ma'ruza muvaffaqiyatli o'chirildi! ✅");
-        fetchLessons(); // Ro'yxatni yangilash
+        fetchLessons(); 
       } catch (err) {
         alert("Xatolik: Ma'ruzani o'chirib bo'lmadi.");
       }
@@ -119,7 +123,7 @@ const Lessons = () => {
         </div>
       </div>
 
-      {/* Mavjud ma'ruzalar ro'yxati va o'chirish */}
+      {/* Yuklangan ma'ruzalar ro'yxati */}
       <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
         <h2 className="text-3xl font-black text-slate-800 mb-6 flex items-center gap-3">
           <Trash2 className="text-rose-600" /> Yuklangan Ma'ruzalar (Eskisini o'chirish)
@@ -154,13 +158,13 @@ const PracticeCreator = () => {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [existingPractices, setExistingPractices] = useState([]); // Eski amaliyotlarni saqlash uchun
+  const [existingPractices, setExistingPractices] = useState([]); 
   const fileInputRef = useRef(null);
 
-  // Bazadagi amaliyotlarni yuklab olish funksiyasi
+  // Bazadagi amaliyotlarni yuklab olish
   const fetchPractices = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/lessons`);
+      const res = await axios.get(`${API}/api/lessons`);
       setExistingPractices(res.data.filter(l => l.type === "amaliyot"));
     } catch (err) {
       console.log("Amaliyotlarni yuklashda xatolik:", err);
@@ -190,7 +194,7 @@ const PracticeCreator = () => {
     }
 
     try {
-      await axios.post(`${API_URL}/api/lessons/upload`, formData, {
+      await axios.post(`${API}/api/lessons/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       
@@ -200,20 +204,20 @@ const PracticeCreator = () => {
       setDesc("");
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-      fetchPractices(); // Ro'yxatni yangilash
+      fetchPractices(); 
     } catch (err) {
       console.error(err);
       alert("Xatolik: Amaliyotni saqlab bo'lmadi.");
     }
   };
 
-  // Eski amaliyotni o'chirish funksiyasi
+  // Amaliyotni o'chirish
   const handleDeletePractice = async (id) => {
     if (window.confirm("Haqiqatan ham ushbu amaliy topshiriqni o'chirmoqchimisiz? ⚠️")) {
       try {
-        await axios.delete(`${API_URL}/api/lessons/${id}`);
+        await axios.delete(`${API}/api/lessons/${id}`);
         alert("Amaliy topshiriq muvaffaqiyatli o'chirildi! ✅");
-        fetchPractices(); // Ro'yxatni yangilash
+        fetchPractices(); 
       } catch (err) {
         alert("Xatolik: Amaliyotni o'chirib bo'lmadi.");
       }
@@ -278,14 +282,14 @@ const PracticeCreator = () => {
         </div>
       </div>
 
-      {/* Mavjud amaliyotlar ro'yxati va o'chirish */}
+      {/* Mavjud amaliyotlar ro'yxati */}
       <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
         <h2 className="text-3xl font-black text-slate-800 mb-6 flex items-center gap-3">
           <Trash2 className="text-rose-600" /> Mavjud Amaliyotlar (Eskisini o'chirish)
         </h2>
         <div className="space-y-4 max-w-4xl">
           {existingPractices.length === 0 ? (
-            <p className="text-slate-400 italic">Hozircha bazada amaliy topshiriqlar muvjud emas.</p>
+            <p className="text-slate-400 italic">Hozircha bazada amaliy topshiriqlar mavjud emas.</p>
           ) : (
             existingPractices.map((p, idx) => (
               <div key={p._id || idx} className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex justify-between items-center hover:shadow-md transition">
@@ -306,8 +310,7 @@ const PracticeCreator = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
 
 const TestCreator = () => {
   const [testTitle, setTestTitle] = useState("");
@@ -319,7 +322,7 @@ const TestCreator = () => {
 
   const fetchTests = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/tests`);
+      const res = await axios.get(`${API}/api/tests`);
       setExistingTests(res.data);
     } catch (err) {
       console.log("Testlarni yuklashda xatolik:", err);
@@ -362,7 +365,7 @@ const TestCreator = () => {
     };
 
     try {
-      await axios.post(`${API_URL}/api/tests/create`, testData);
+      await axios.post(`${API}/api/tests/create`, testData);
       alert(`"${testTitle}" testi jami ${questionsList.length}ta savol bilan muvaffaqiyatli bazaga saqlandi! 🚀✅`);
       
       setTestTitle("");
@@ -376,7 +379,7 @@ const TestCreator = () => {
   const handleDeleteTest = async (id) => {
     if (window.confirm("Haqiqatan ham ushbu testni o'chirmoqchimisiz? ⚠️")) {
       try {
-        await axios.delete(`${API_URL}/api/tests/${id}`);
+        await axios.delete(`${API}/api/tests/${id}`);
         alert("Test muvaffaqiyatli o'chirildi! ✅");
         fetchTests(); 
       } catch (err) {
@@ -385,7 +388,7 @@ const TestCreator = () => {
     }
   };
 
- return (
+  return (
     <div className="space-y-8">
       <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
         <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3"><ClipboardCheck className="text-emerald-600" /> Test Yaratish</h2>
@@ -477,7 +480,7 @@ const StudentMonitoring = () => {
     const [students, setStudents] = useState([]);
     
     const fetchResults = () => {
-      axios.get(`${API_URL}/api/tests/all-results`)
+      axios.get(`${API}/api/tests/all-results`)
         .then(res => setStudents(res.data.results || res.data))
         .catch(err => console.log(err));
     };
@@ -495,12 +498,12 @@ const StudentMonitoring = () => {
 
       if (window.confirm("Haqiqatan ham ushbu talaba natijasini ro'yxatdan o'chirmoqchimisiz? ⚠️")) {
         try {
-          await axios.delete(`${API_URL}/api/tests/result/${id}`);
+          await axios.delete(`${API}/api/tests/result/${id}`);
           alert("Talaba natijasi muvaffaqiyatli o'chirildi! ✅");
           fetchResults(); 
         } catch (err) {
           console.error(err);
-          alert("Xatolik: Natijani o'chirib bo'lmadi.");
+          alert("Xatolik: Natijani o'chirib bo'lmadi. Backend yo'li noto'g'ri bo'lishi mumkin.");
         }
       }
     };
@@ -545,11 +548,13 @@ const StudentMonitoring = () => {
     );
 };
 
+// ==========================================
 // --- 2. TALABA OYNASI: MA'RUZALARIM BO'LIMI ---
+// ==========================================
 const StudentLessons = () => {
     const [lessons, setLessons] = useState([]);
     useEffect(() => {
-        axios.get(`${API_URL}/api/lessons`)
+        axios.get(`${API}/api/lessons`)
           .then(res => setLessons(res.data))
           .catch(err => console.log(err));
     }, []);
@@ -567,7 +572,7 @@ const StudentLessons = () => {
                   <div key={idx} className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex justify-between items-center hover:shadow-md transition">
                       <span className="font-black text-slate-700 italic text-lg tracking-tight">{idx+1}. {lesson.title}</span>
                       {lesson.fileUrl && (
-                        <a href={`${API_URL}/uploads/${lesson.fileUrl}`} target="_blank" rel="noreferrer" className="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">O'QISH (PDF)</a>
+                        <a href={`${API}/uploads/${lesson.fileUrl}`} target="_blank" rel="noreferrer" className="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">O'QISH (PDF)</a>
                       )}
                   </div>
                 ))
@@ -578,7 +583,9 @@ const StudentLessons = () => {
 };
 
 
+// ==========================================
 // --- 3. TALABA OYNASI: AMALIY ISHLAR BO'LIMI ---
+// ==========================================
 const StudentPracticals = ({ score, timeSpent }) => { 
     const [lessons, setLessons] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState({}); 
@@ -589,7 +596,7 @@ const StudentPracticals = ({ score, timeSpent }) => {
     const studentName = savedUser.name || savedUser.username || "Talaba";
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/lessons`)
+        axios.get(`${API}/api/lessons`)
           .then(res => setLessons(res.data))
           .catch(err => console.log("Darslarni yuklashda xato:", err));
     }, []);
@@ -613,22 +620,26 @@ const StudentPracticals = ({ score, timeSpent }) => {
             alert("Diqqat! Tizimga talaba sifatida kirmagansiz yoki profil ma'lumotlari topilmadi. LocalStorage-ni tekshiring!");
         }
 
+        // 2. BALL VA TAYMER: Statelardan yoki localStorage ichidan real qiymatlarni qidiradi
         const finalTestScore = typeof score !== "undefined" ? score : (savedUser.testScore || 0);
         const finalTimeSpent = typeof timeSpent !== "undefined" ? timeSpent : (savedUser.timeSpent || 0);
 
+        // ⭐ FormData yaratish va barcha qiymatlarni matn ko'rinishida yuborish
         const formData = new FormData();
         formData.append("file", file); 
         formData.append("lessonId", lessonId);
         formData.append("lessonTitle", practice.title);
         formData.append("studentId", studentId); 
-        formData.append("studentName", studentName);       
-        formData.append("testScore", String(finalTestScore)); 
-        formData.append("timeSpent", String(finalTimeSpent)); 
+        
+        // ADMINGA BORADIGAN REAL MA'LUMOTLAR:
+        formData.append("studentName", studentName);       // Real talaba ismi
+        formData.append("testScore", String(finalTestScore)); // Real to'plagan balli
+        formData.append("timeSpent", String(finalTimeSpent)); // Real sarflagan vaqti
 
         try {
             setUploadingStatus(prev => ({ ...prev, [lessonId]: "Yuborilmoqda..." }));
             
-            const response = await axios.post(`${API_URL}/api/tests/submit`, formData, {
+            const response = await axios.post("https://dashboard.render.com/api/tests/submit", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
             
@@ -636,6 +647,7 @@ const StudentPracticals = ({ score, timeSpent }) => {
                 setUploadingStatus(prev => ({ ...prev, [lessonId]: "Muvaffaqiyatli yuborildi! ✅" }));
                 alert("Vazifa muvaffaqiyatli topshirildi va bazaga saqlandi! 🎉");
                 
+                // Yuklangan faylni inputdan tozalash
                 setSelectedFiles(prev => {
                     const updated = { ...prev };
                     delete updated[lessonId];
@@ -646,6 +658,7 @@ const StudentPracticals = ({ score, timeSpent }) => {
             console.error("Yuborishda xatolik yuz berdi:", err);
             
             if (err.response && err.response.data) {
+                console.log("Backend qaytargan aniq xato xabari:", err.response.data);
                 alert(`Xatolik: ${err.response.data.error || "Serverda ichki xato yuz berdi"}`);
             } else {
                 alert("Server bilan ulanishda xatolik yuz berdi. Server ishlayotganini tekshiring.");
@@ -654,443 +667,79 @@ const StudentPracticals = ({ score, timeSpent }) => {
             setUploadingStatus(prev => ({ ...prev, [lessonId]: "Xatolik yuz berdi. Qayta urining." }));
         }
     };
-   
-  // Diqqat: API_URL yuqorida e'lon qilingani uchun bu yerda to'g'ridan-to'g'ri ishlatiladi:
-// const API_URL = "https://student-system-backend-3.onrender.com";
 
-  return (
-    <div className="space-y-8">
-      <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
-        <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3"><ClipboardCheck className="text-emerald-600" /> Test Yaratish</h2>
-        <div className="space-y-4 max-w-2xl">
-          <div>
-            <label className="text-slate-400 font-bold ml-2 mb-2 block text-sm uppercase">Mavzu / Test Sarlavhasi</label>
-            <input 
-              const TestCreator = () => {
-  // 1. Render qidirayotgan barcha statelar shu yerda yaratildi
-  const [testTitle, setTestTitle] = useState("");
-  const [question, setQuestion] = useState("");
-  const [options, setOptions] = useState({ a: "", b: "", c: "", d: "" });
-  const [correct, setCorrect] = useState("a");
-  const [questionsList, setQuestionsList] = useState([]);
-  const [existingTests, setExistingTests] = useState([]);
-
-  // 2. Mavjud testlarni bazadan yuklash funksiyasi
-  const fetchTests = () => {
-    axios.get("https://dashboard.render.com/api/tests")
-      .then(res => setExistingTests(res.data))
-      .catch(err => console.log(err));
-  };
-
-  useEffect(() => {
-    fetchTests();
-  }, []);
-
-  // 3. Savolni vaqtincha xotiraga (ro'yxatga) qo'shish
-  const addQuestionToMemory = () => {
-    if (!question.trim() || !options.a || !options.b || !options.c || !options.d) {
-      return alert("Iltimos, savol matni va barcha javoblarni to'ldiring! ⚠️");
-    }
-    const newQ = {
-      questionText: question,
-      options: [options.a, options.b, options.c, options.d],
-      correctAnswer: options[correct]
-    };
-    setQuestionsList([...questionsList, newQ]);
-    setQuestion("");
-    setOptions({ a: "", b: "", c: "", d: "" });
-    setCorrect("a");
-  };
-
-  // 4. Umumiylashtirilgan testni backend bazasiga saqlash
-  const saveEntireTestToDB = async () => {
-    if (!testTitle.trim()) return alert("Test sarlavhasini kiriting! ⚠️");
-    if (questionsList.length === 0) return alert("Kamida bitta savol qo'shing! ⚠️");
-
-    try {
-      await axios.post("https://dashboard.render.com/api/tests", {
-        title: testTitle,
-        questions: questionsList
-      });
-      alert("Butun test muvaffaqiyatli bazaga saqlandi! 🎉");
-      setTestTitle("");
-      setQuestionsList([]);
-      fetchTests();
-    } catch (err) {
-      console.error(err);
-      alert("Testni saqlashda xatolik yuz berdi.");
-    }
-  };
-
-  // 5. Eskirgan testni bazadan o'chirish
-  const handleDeleteTest = async (id) => {
-    if (!id) return;
-    if (window.confirm("Haqiqatan ham ushbu testni o'chirmoqchimisiz? ⚠️")) {
-      try {
-        await axios.delete(`https://dashboard.render.com/api/tests/${id}`);
-        alert("Test o'chirildi! ✅");
-        fetchTests();
-      } catch (err) {
-        console.error(err);
-        alert("O'chirishda xatolik yuz berdi.");
-      }
-    }
-  };
-
-  // 6. Siz yuborgan vizual interfeys (HTML qismi) endi barcha o'zgaruvchilarni taniydi
-  return (
-    <div className="space-y-8">
-      <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
-        <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3">
-          <ClipboardCheck className="text-emerald-600" /> Test Yaratish
-        </h2>
-        <div className="space-y-4 max-w-2xl">
-          <div>
-            <label className="text-slate-400 font-bold ml-2 mb-2 block text-sm uppercase">Mavzu / Test Sarlavhasi</label>
-            <input 
-              disabled={questionsList.length > 0} 
-              value={testTitle} 
-              onChange={(e) => setTestTitle(e.target.value)} 
-              placeholder="Masalan: React Asoslari" 
-              className="w-full p-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-emerald-400 outline-none font-bold disabled:opacity-60" 
-            />
-            {questionsList.length > 0 && <p className="text-xs text-orange-500 font-bold mt-1">* Savollar qo'shilayotgan paytda sarlavha qulflanadi.</p>}
-          </div>
-          
-          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
-            <span className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-black uppercase">Savol tafsilotlari</span>
-            <div>
-              <label className="text-slate-400 font-bold ml-2 mb-2 block text-sm uppercase">Savol Matni</label>
-              <textarea value={question} onChange={(e) => setQuestion(e.target.value)} className="w-full p-4 bg-white rounded-2xl border-2 border-transparent focus:border-emerald-400 outline-none font-bold shadow-sm" placeholder="Savol matnini kiriting..."></textarea>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {['a', 'b', 'c', 'd'].map((opt) => (
-                <input key={opt} value={options[opt]} onChange={(e) => setOptions({...options, [opt]: e.target.value})} placeholder={`${opt.toUpperCase()} javob`} className="p-4 bg-white rounded-xl border-2 border-transparent focus:border-emerald-300 outline-none font-medium shadow-sm" />
-              ))}
-            </div>
-            <div className="flex items-center gap-4 py-2">
-              <span className="font-bold text-slate-600">To'g'ri javobni belgilang:</span>
-              <select value={correct} onChange={(e) => setCorrect(e.target.value)} className="p-2 bg-emerald-50 rounded-lg font-bold outline-none text-emerald-700">
-                <option value="a">A javob</option>
-                <option value="b">B javob</option>
-                <option value="c">C javob</option>
-                <option value="d">D javob</option>
-              </select>
-            </div>
-            
-            <button type="button" onClick={addQuestionToMemory} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-sm uppercase shadow-md hover:bg-blue-700 transition">
-              + SAVOLNI RO'YXATGA QO'SHISH
-            </button>
-          </div>
-
-          {questionsList.length > 0 && (
-            <div className="p-4 bg-orange-50 border border-orange-200 rounded-2xl">
-              <p className="font-bold text-orange-800">Hozirgi to'plangan savollar soni: <span className="font-black text-lg">{questionsList.length}</span> ta</p>
-              <ul className="text-xs text-slate-600 list-disc ml-4 mt-2">
-                {questionsList.map((q, i) => <li key={i} className="font-medium">{i+1}. {q.questionText}</li>)}
-              </ul>
-            </div>
-          )}
-
-          <button type="button" onClick={saveEntireTestToDB} className="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black text-lg uppercase shadow-lg hover:bg-emerald-700 transition block">
-            ✅ UMUMIY TESTNI BAZAGA SAQLASH ({questionsList.length} ta savol)
-          </button>
-        </div>
-      </div>
-
-      <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
-        <h2 className="text-3xl font-black text-slate-800 mb-6 flex items-center gap-3">
-          <Trash2 className="text-rose-600" /> Mavjud Testlar (Eskisini o'chirish)
-        </h2>
-        <div className="space-y-4 max-w-4xl">
-          {existingTests.length === 0 ? (
-            <p className="text-slate-400 italic">Hozircha bazada testlar mavjud emas.</p>
+    return (
+    <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
+      <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3"> Amaliy Mashg'ulotlar</h2>
+      <div className="space-y-6">
+          {amaliyotlar.length === 0 ? (
+            <p className="text-slate-400 italic p-4">Hozircha amaliy topshiriqlar yuborilmagan.</p>
           ) : (
-            existingTests.map((t, idx) => (
-              <div key={t._id || idx} className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex justify-between items-center hover:shadow-md transition">
-                <div>
-                  <span className="font-black text-slate-700 text-lg block">{t.title || t.lessonTitle}</span>
-                  <span className="text-xs font-bold text-slate-400 uppercase">Savollar soni: {t.questions?.length || 0} ta</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteTest(t._id)}
-                  className="px-5 py-3 bg-rose-100 text-rose-600 rounded-2xl font-bold hover:bg-rose-600 hover:text-white transition flex items-center gap-2 uppercase text-sm"
-                >
-                  <Trash2 size={16} /> O'chirish
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-                  className="px-5 py-3 bg-rose-100 text-rose-600 rounded-2xl font-bold hover:bg-rose-600 hover:text-white transition flex items-center gap-2 uppercase text-sm"
-                >
-                  <Trash2 size={16} /> O'chirish
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-StudentMonitoring = () => {
-    const [students, setStudents] = useState([]);
-    
-    const fetchResults = () => {
-      axios.get(`${API_URL}/api/tests/all-results`)
-        .then(res => setStudents(res.data.results || res.data))
-        .catch(err => console.log(err));
-    };
-
-    useEffect(() => {
-        fetchResults();
-    }, []);
-    const handleDeleteResult = async (e, id) => {
-      if (e) e.stopPropagation(); 
-      
-      if (!id) {
-        return alert("Xatolik: Natija ID si topilmadi!");
-      }
-
-      if (window.confirm("Haqiqatan ham ushbu talaba natijasini ro'yxatdan o'chirmoqchimisiz? ⚠️")) {
-        try {
-          await axios.delete(`${API_URL}/api/tests/result/${id}`);
-          alert("Talaba natijasi muvaffaqiyatli o'chirildi! ✅");
-          fetchResults(); 
-        } catch (err) {
-          console.error(err);
-          alert("Xatolik: Natijani o'chirib bo'lmadi.");
-        }
-      }
-    };
-
-    return (
-        <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100">
-          <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3"><Users className="text-indigo-600" /> Talabalar Monitoringi</h2>
-          <div className="overflow-hidden rounded-2xl border border-slate-100">
-              <table className="w-full text-left">
-                  <thead className="bg-slate-50 text-slate-400 uppercase text-xs">
-                      <tr>
-                        <th className="p-4">F.I.SH</th>
-                        <th className="p-4">Mavzu</th>
-                        <th className="p-4">Natija</th>
-                        <th className="p-4">Holat</th>
-                        <th className="p-4 text-center">Harakat</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      {students.map((s, idx) => (
-                          <tr key={s._id || idx} className="border-t hover:bg-slate-50 transition">
-                            <td className="p-4 font-bold text-slate-700">{s.studentName}</td>
-                            <td className="p-4 font-medium text-slate-500">{s.lessonTitle}</td>
-                            <td className="p-4 text-emerald-600 font-black italic">{s.testScore}%</td>
-                            <td className="p-4"><span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase">{s.status || "Tugallandi"}</span></td>
-                            <td className="p-4 text-center">
-                              <button 
-                                type="button"
-                                onClick={(e) => handleDeleteResult(e, s._id)}
-                                className="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition inline-flex items-center justify-center"
-                                title="Natijani o'chirish"
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                            </td>
-                          </tr>
-                      ))}
-                  </tbody>
-              </table>
-          </div>
-        </div>
-    );
-};
-
-// --- 2. TALABA OYNASI: MA'RUZALARIM BO'LIMI ---
- StudentLessons = () => {
-    const [lessons, setLessons] = useState([]);
-    useEffect(() => {
-        axios.get(`${API_URL}/api/lessons`)
-          .then(res => setLessons(res.data))
-          .catch(err => console.log(err));
-    }, []);
-
-    const maruzalar = lessons.filter(l => l.type === "maruza");
-
-    return (
-        <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
-          <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3"><BookOpen className="text-blue-600" /> Ma'ruzalarim</h2>
-          <div className="space-y-4">
-              {maruzalar.length === 0 ? (
-                <p className="text-slate-400 italic p-4">Hozircha ma'ruzalar yuklanmagan.</p>
-              ) : (
-                maruzalar.map((lesson, idx) => (
-                  <div key={idx} className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex justify-between items-center hover:shadow-md transition">
-                      <span className="font-black text-slate-700 italic text-lg tracking-tight">{idx+1}. {lesson.title}</span>
-                      {lesson.fileUrl && (
-                        <a href={`${API_URL}/uploads/${lesson.fileUrl}`} target="_blank" rel="noreferrer" className="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">O'QISH (PDF)</a>
-                      )}
-                  </div>
-                ))
-              )}
-          </div>
-        </div>
-    );
-};
-
-
-// --- 3. TALABA OYNASI: AMALIY ISHLAR BO'LIMI ---
-StudentPracticals = ({ score, timeSpent }) => { 
-    const [lessons, setLessons] = useState([]);
-    const [selectedFiles, setSelectedFiles] = useState({}); 
-    const [uploadingStatus, setUploadingStatus] = useState({}); 
-
-    const savedUser = JSON.parse(localStorage.getItem("user")) || {}; 
-    const studentId = savedUser._id || savedUser.id || "664b3c2e1f4a2b3c4d5e6f7a"; 
-    const studentName = savedUser.name || savedUser.username || "Talaba";
-
-    useEffect(() => {
-        axios.get(`${API_URL}/api/lessons`)
-          .then(res => setLessons(res.data))
-          .catch(err => console.log("Darslarni yuklashda xato:", err));
-    }, []);
-
-    const amaliyotlar = lessons.filter(l => l.type === "amaliyot");
-
-    const handleFileChange = (lessonId, file) => {
-        setSelectedFiles(prev => ({ ...prev, [lessonId]: file }));
-    };
-
-    const handleUploadHomework = async (practice) => {
-        const lessonId = practice._id;
-        const file = selectedFiles[lessonId];
-        
-        if (!file) {
-            alert("Iltimos, avval topshirish uchun fayl tanlang!");
-            return;
-        }
-
-        if (!savedUser._id && !savedUser.id) {
-            alert("Diqqat! Tizimga talaba sifatida kirmagansiz yoki profil ma'lumotlari topilmadi. LocalStorage-ni tekshiring!");
-        }
-
-        const finalTestScore = typeof score !== "undefined" ? score : (savedUser.testScore || 0);
-        const finalTimeSpent = typeof timeSpent !== "undefined" ? timeSpent : (savedUser.timeSpent || 0);
-
-        const formData = new FormData();
-        formData.append("file", file); 
-        formData.append("lessonId", lessonId);
-        formData.append("lessonTitle", practice.title);
-        formData.append("studentId", studentId); 
-        formData.append("studentName", studentName);       
-        formData.append("testScore", String(finalTestScore)); 
-        formData.append("timeSpent", String(finalTimeSpent)); 
-
-        try {
-            setUploadingStatus(prev => ({ ...prev, [lessonId]: "Yuborilmoqda..." }));
-            
-            const response = await axios.post(`${API_URL}/api/tests/submit`, formData, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
-            
-            if (response.data.success) {
-                setUploadingStatus(prev => ({ ...prev, [lessonId]: "Muvaffaqiyatli yuborildi! ✅" }));
-                alert("Vazifa muvaffaqiyatli topshirildi va bazaga saqlandi! 🎉");
-                
-                setSelectedFiles(prev => {
-                    const updated = { ...prev };
-                    delete updated[lessonId];
-                    return updated;
-                });
-            }
-        } catch (err) {
-            console.error("Yuborishda xatolik yuz berdi:", err);
-            
-            if (err.response && err.response.data) {
-                alert(`Xatolik: ${err.response.data.error || "Serverda ichki xato yuz berdi"}`);
-            } else {
-                alert("Server bilan ulanishda xatolik yuz berdi. Server ishlayotganini tekshiring.");
-            }
-            
-            setUploadingStatus(prev => ({ ...prev, [lessonId]: "Xatolik yuz berdi. Qayta urining." }));
-        }
-    };
-
-return (
-        <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
-          <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3"> Amaliy Mashg'ulotlar</h2>
-          <div className="space-y-6">
-              {amaliyotlar.length === 0 ? (
-                <p className="text-slate-400 italic p-4">Hozircha amaliy topshiriqlar yuborilmagan.</p>
-              ) : (
-                amaliyotlar.map((practice, idx) => {
-                  const lessonId = practice._id || idx;
-                  return (
-                    <div key={lessonId} className="p-6 bg-orange-50/30 rounded-3xl border border-orange-100 space-y-4">
-                        <div className="flex justify-between items-center">
-                          <span className="font-black text-slate-800 text-xl">{idx+1}. {practice.title}</span>
-                          <span className="text-xs bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-bold uppercase">Amaliyot</span>
-                        </div>
-                        
-                        {practice.content && (
-                          <p className="bg-white p-4 rounded-2xl text-slate-600 text-sm border border-slate-100 whitespace-pre-line">{practice.content}</p>
-                        )}
-
-                        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-dashed border-orange-100">
-                          {practice.fileUrl && (
-                            <a href={`https://dashboard.render.com/uploads/${practice.fileUrl}`} target="_blank" rel="noreferrer" className="inline-block px-5 py-2 bg-orange-600 text-white rounded-xl text-sm font-bold hover:bg-orange-700 transition">
-                              Biriktirilgan fayl
-                            </a>
-                          )}
-
-                          <div className="flex items-center gap-2 bg-white p-1.5 pl-4 border border-slate-200 rounded-xl max-w-md w-full sm:w-auto">
-                            <span className="text-xs text-slate-500 truncate max-w-[150px]">
-                              {selectedFiles[lessonId] ? selectedFiles[lessonId].name : "Fayl tanlanmagan"}
-                            </span>
-                            <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition ml-auto">
-                              Explorer
-                              <input 
-                                type="file" 
-                                className="hidden" 
-                                onChange={(e) => handleFileChange(lessonId, e.target.files[0])}
-                              />
-                            </label>
-                          </div>
-
-                          <button 
-                            onClick={() => handleUploadHomework(practice)} 
-                            disabled={!selectedFiles[lessonId]}
-                            className={`px-5 py-2 rounded-xl text-sm font-bold transition ${                              
-                              selectedFiles[lessonId] 
-                                ? "bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer" 
-                                : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                            }`}                          
-                          >
-                            Vazifani topshirish
-                          </button>
-                        </div>
-
-                        {uploadingStatus[lessonId] && (
-                          <p className="text-xs font-semibold text-slate-500 animate-pulse pl-2">
-                            {uploadingStatus[lessonId]}
-                          </p>
-                        )}
+            amaliyotlar.map((practice, idx) => {
+              const lessonId = practice._id || idx;
+              return (
+                <div key={lessonId} className="p-6 bg-orange-50/30 rounded-3xl border border-orange-100 space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-black text-slate-800 text-xl">{idx+1}. {practice.title}</span>
+                      <span className="text-xs bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-bold uppercase">Amaliyot</span>
                     </div>
-                  );
-                })
-              )}
-          </div>
-        </div>
-    );
+                    
+                    {practice.content && (
+                      <p className="bg-white p-4 rounded-2xl text-slate-600 text-sm border border-slate-100 whitespace-pre-line">{practice.content}</p>
+                    )}
+
+                    <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-dashed border-orange-100">
+                      {practice.fileUrl && (
+                        <a href={`${API}/uploads/${practice.fileUrl}`} target="_blank" rel="noreferrer" className="inline-block px-5 py-2 bg-orange-600 text-white rounded-xl text-sm font-bold hover:bg-orange-700 transition">
+                          Biriktirilgan fayl
+                        </a>
+                      )}
+
+                      <div className="flex items-center gap-2 bg-white p-1.5 pl-4 border border-slate-200 rounded-xl max-w-md w-full sm:w-auto">
+                        <span className="text-xs text-slate-500 truncate max-w-[150px]">
+                          {selectedFiles[lessonId] ? selectedFiles[lessonId].name : "Fayl tanlanmagan"}
+                        </span>
+                        <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition ml-auto">
+                          Explorer
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            onChange={(e) => handleFileChange(lessonId, e.target.files[0])}
+                          />
+                        </label>
+                      </div>
+
+                      <button 
+                        onClick={() => handleUploadHomework(practice)} 
+                        disabled={!selectedFiles[lessonId]}
+                        className={`px-5 py-2 rounded-xl text-sm font-bold transition ${
+                          selectedFiles[lessonId] 
+                            ? "bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer" 
+                            : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                        }`}
+                      >
+                        Vazifani topshirish
+                      </button>
+                    </div>
+
+                    {uploadingStatus[lessonId] && (
+                      <p className="text-xs font-semibold text-slate-500 animate-pulse pl-2">
+                        {uploadingStatus[lessonId]}
+                      </p>
+                    )}
+                </div>
+              );
+            })
+          )}
+      </div>
+    </div>
+  );
 };
 
 
+// ==========================================
 // --- 4. TALABA OYNASI: TEST TOPSHIRISH BO'LIMI ---
+// ==========================================
 const StudentTests = ({ user }) => {
   const [tests, setTests] = useState([]);
   const [activeTest, setActiveTest] = useState(null);
@@ -1099,19 +748,19 @@ const StudentTests = ({ user }) => {
   const timerRef = useRef(null);
 
   useEffect(() => {
-    axios.get("https://dashboard.render.com/api/tests") 
+    axios.get(`${API}/api/tests`) 
       .then(res => {
         if(res.data && res.data.length > 0) {
           setTests(res.data);
         } else {
-          axios.get("https://dashboard.render.com/api/lessons").then(lessonRes => {
+          axios.get(`${API}/api/lessons`).then(lessonRes => {
             if(lessonRes.data.length > 0) {
               const structureTests = lessonRes.data.map((l, i) => ({
                  _id: l._id,
                  title: l.title,
                  questions: [
                    { questionText: `${l.title} mavzusining asosiy maqsadi nima?`, options: ["Bilim olish", "Amaliyot qilish", "Tizimni o'rganish", "Hammasi to'g'ri"], correctAnswer: "Hammasi to'g'ri" }
-                 ]
+                 ] structureTests
               }));
               setTests(structureTests);
             }
@@ -1158,15 +807,15 @@ const StudentTests = ({ user }) => {
     const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
 
     const payload = {
-      studentId: user._id || user.id,
-      studentName: user.username,
+      studentId: user?._id || user?.id || "664b3c2e1f4a2b3c4d5e6f7a",
+      studentName: user?.username || user?.name || "Talaba",
       lessonTitle: activeTest.title || activeTest.lessonTitle,
       timeSpent: testTimeSpent,
       testScore: scorePercentage
     };
 
     try {
-      await axios.post("https://dashboard.render.com/api/tests/submit", payload);
+      await axios.post(`${API}/api/tests/submit`, payload);
       alert(`Test yakunlandi! Natijangiz: ${scorePercentage}%. Tahlil muvaffaqiyatli saqlandi! ✅`);
       setActiveTest(null);
       setSelectedAnswers({});
@@ -1199,11 +848,11 @@ const StudentTests = ({ user }) => {
                     key={oIdx}
                     type="button"
                     onClick={() => handleSelectAnswer(qIdx, opt)}
-                    className={`p-4 rounded-2xl font-medium text-left border-2 transition-all ${                      
+                    className={`p-4 rounded-2xl font-medium text-left border-2 transition-all ${
                       selectedAnswers[qIdx] === opt
                         ? "bg-emerald-50 border-emerald-500 text-emerald-900 font-bold"
                         : "bg-white border-transparent hover:border-slate-200 text-slate-700"
-                    }`}                  
+                    }`}
                   >
                     {opt}
                   </button>
@@ -1222,7 +871,7 @@ const StudentTests = ({ user }) => {
       </div>
     );
   }
-
+  
   return (
     <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 animate-fadeIn">
       <h2 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3">
@@ -1250,6 +899,9 @@ const StudentTests = ({ user }) => {
   );
 };
 
+// ==========================================
+// --- 5. NAVIGATSIYA ELEMENTI KOMPONENTI ---
+// ==========================================
 const NavItem = ({ to, icon: Icon, label }) => {
   const location = useLocation();
   const active = location.pathname === to;
@@ -1260,6 +912,9 @@ const NavItem = ({ to, icon: Icon, label }) => {
   );
 };
 
+// ==========================================
+// --- 6. ASOSIY APP KOMPONENTI (EXPORT DEFAULT) ---
+// ==========================================
 export default function App() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({ username: '', password: '', role: 'student' });
@@ -1276,7 +931,7 @@ export default function App() {
     }
 
     try {
-      const res = await axios.post(`https://dashboard.render.com/api/auth/${type}`, {
+      const res = await axios.post(`${API}/api/auth/${type}`, {
         username: formData.username.trim(),
         password: formData.password,
         role: formData.role
@@ -1418,64 +1073,8 @@ export default function App() {
     </Router>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+           
+      
 
 
 
