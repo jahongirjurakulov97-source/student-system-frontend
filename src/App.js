@@ -310,7 +310,8 @@ const PracticeCreator = () => {
         </div>
       </div>
     </div>
-  )
+  );
+};
 
 const TestCreator = () => {
   const [testTitle, setTestTitle] = useState("");
