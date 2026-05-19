@@ -638,9 +638,9 @@ const StudentPracticals = ({ score, timeSpent }) => {
         try {
             setUploadingStatus(prev => ({ ...prev, [lessonId]: "Yuborilmoqda..." }));
             
-            const response = await axios.post("https://dashboard.render.com/api/tests/submit", formData, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
+            const response = await axios.post(`${API}/api/tests/submit`, formData, {
+  headers: { "Content-Type": "multipart/form-data" }
+});
             
             if (response.data.success) {
                 setUploadingStatus(prev => ({ ...prev, [lessonId]: "Muvaffaqiyatli yuborildi! ✅" }));
