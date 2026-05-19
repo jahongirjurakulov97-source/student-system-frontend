@@ -851,7 +851,7 @@ StudentMonitoring = () => {
 
 
 // --- 3. TALABA OYNASI: AMALIY ISHLAR BO'LIMI ---
-const StudentPracticals = ({ score, timeSpent }) => { 
+StudentPracticals = ({ score, timeSpent }) => { 
     const [lessons, setLessons] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState({}); 
     const [uploadingStatus, setUploadingStatus] = useState({}); 
