@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios"; 
 
+// Backend API jonli havolasi
+const API_URL = "https://student-system-backend-3.onrender.com";
+
 export default function AdminPanel() {
   const [students, setStudents] = useState([]); 
   const [name, setName] = useState("");
@@ -13,7 +16,7 @@ export default function AdminPanel() {
 
   const fetchResults = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/tests/all-results");
+      const res = await axios.get(`${API_URL}/api/tests/all-results`);
       
       // Tekshiruv: Ma'lumot massiv bo'lib kelsa set qilamiz, aks holda bo'sh massiv
       if (Array.isArray(res.data)) {
@@ -33,7 +36,7 @@ export default function AdminPanel() {
   const handleAdd = async () => {
     if (name && score) {
       try {
-        await axios.post("http://localhost:5000/api/tests/save-result", {
+        await axios.post(`${API_URL}/api/tests/save-result`, {
           studentName: name, 
           testScore: Number(score),
           timeSpent: 15 
@@ -53,7 +56,7 @@ export default function AdminPanel() {
   const handleDelete = async (id) => {
     if (window.confirm("Haqiqatan ham o'chirmoqchimisiz?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/tests/result/${id}`);
+        await axios.delete(`${API_URL}/api/tests/result/${id}`);
         fetchResults();
       } catch (err) {
         alert("O'chirishda xatolik!");
