@@ -748,30 +748,33 @@ const StudentTests = ({ user }) => {
   const timerRef = useRef(null);
 
   useEffect(() => {
-    axios.get(`${API}/api/tests`) 
-      .then(res => {
-        if(res.data && res.data.length > 0) {
-          setTests(res.data);
-        } else {
-          axios.get(`${API}/api/lessons`).then(lessonRes => {
-            if(lessonRes.data.length > 0) {
-              const structureTests = lessonRes.data.map((l, i) => ({
-                 _id: l._id,
-                 title: l.title,
-                 questions: [
-                   { questionText: `${l.title} mavzusining asosiy maqsadi nima?`, options: ["Bilim olish", "Amaliyot qilish", "Tizimni o'rganish", "Hammasi to'g'ri"], correctAnswer: "Hammasi to'g'ri" }
-                 ] structureTests
-              }));
-              setTests(structureTests);
-            }
-          });
-        }
-      })
-      .catch(err => {
-         console.log("Test yuklashda xato, muqobil yuklanmoqda...", err);
-      });
-  }, []);
-
+  axios.get(`${API}/api/tests`) 
+    .then(res => {
+      if(res.data && res.data.length > 0) {
+        setTests(res.data);
+      } else {
+        axios.get(`${API}/api/lessons`).then(lessonRes => {
+          if(lessonRes.data.length > 0) {
+            const structureTests = lessonRes.data.map((l, i) => ({
+               _id: l._id,
+               title: l.title,
+               questions: [
+                 { 
+                   questionText: `${l.title} mavzusining asosiy maqsadi nima?`, 
+                   options: ["Bilim olish", "Amaliyot qilish", "Tizimni o'rganish", "Hammasi to'g'ri"], 
+                   correctAnswer: "Hammasi to'g'ri" 
+                 }
+               ]
+            }));
+            setTests(structureTests);
+          }
+        });
+      }
+    })
+    .catch(err => {
+       console.log("Test yuklashda xato, muqobil yuklanmoqda...", err);
+    });
+}, []);
   useEffect(() => {
     if (activeTest) {
       timerRef.current = setInterval(() => {
